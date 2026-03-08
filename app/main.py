@@ -8,9 +8,10 @@ from auth.middleware import auth_middleware
 
 app = FastAPI()
 
+
 # Routers
 app.include_router(client.router)
-
+app.include_router(admin.router)
 
 
 # Middleware registration (reverse execution order)

@@ -1,7 +1,8 @@
 from fastapi import APIRouter
 
-route = APIRouter()
+router = APIRouter()
 
-@route.get('/admin')
+
+@router.get('/admin')
 def admin():
     return "this is admin page"
