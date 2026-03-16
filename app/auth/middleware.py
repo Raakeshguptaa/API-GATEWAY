@@ -18,7 +18,7 @@ async def auth_middleware(request: Request, call_next):
     auth_header = request.headers.get("Authorization")
     api_key = request.headers.get("x-api-key")
     admin_key = request.headers.get("admin-api-key")
-
+    
 
     is_admin_route = request.url.path.startswith("/admin")
     
@@ -32,16 +32,26 @@ async def auth_middleware(request: Request, call_next):
     if auth_header and auth_header.startswith("Bearer "):
 
         token = auth_header.split(" ")[1]
-        
+
+        print(auth_header)
+
+
 
         try:
+            
             payload = verify_token(token)
+
+        
+
 
             if payload:
                 request.state.user = payload
                 request.state.auth_type = "jwt"
 
+                
+
         except Exception:
+        
             pass
 
     elif admin_key and validate_admin_key(admin_key):

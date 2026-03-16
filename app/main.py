@@ -4,6 +4,7 @@ from routes import client, admin
 from middleware.request_id import add_request_id
 from middleware.logging import log_info
 from auth.middleware import auth_middleware
+from rate_limiter.limiter import add
 
 
 app = FastAPI()
@@ -15,6 +16,7 @@ app.include_router(admin.router)
 
 
 # Middleware registration (reverse execution order)
+app.middleware("http")(add)
 app.middleware("http")(auth_middleware)
 app.middleware("http")(log_info)
 app.middleware("http")(add_request_id)
