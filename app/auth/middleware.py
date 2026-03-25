@@ -5,7 +5,23 @@ from .jwt_handler import verify_token
 from .api_key import validate_api_key , validate_admin_key
 
 
+
+# Paths that should never require auth
+EXEMPT_PATHS = {
+    "/",
+    "/docs",
+    "/openapi.json",
+    "/redoc",
+    "/health",
+    "/api/auth/login",
+    "/api/auth/refresh",
+}
+
 async def auth_middleware(request: Request, call_next):
+
+    if request.url.path in EXEMPT_PATHS:
+        return await call_next(request)
+
 
     # default state values
     request.state.user = None

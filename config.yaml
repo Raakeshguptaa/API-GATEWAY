@@ -1,0 +1,158 @@
+# ============================================================
+# API Gateway — Route Definitions
+# ============================================================
+# Each route defines:
+#   path           - incoming request path (gateway side)
+#   target         - downstream service URL to forward to
+#   method         - HTTP method (GET, POST, PUT, DELETE, PATCH)
+#   auth_required  - true = validate JWT or API key before forwarding
+#   rate_limit     - requests allowed per window_seconds (per IP)
+#
+# Changes require a server restart to take effect.
+# ============================================================
+
+routes:
+
+  # ------------------------------------------------------------
+  # User Service
+  # ------------------------------------------------------------
+
+  - path: /api/users
+    target: http://localhost:8001/users
+    method: GET
+    auth_required: true
+    rate_limit:
+      requests: 20
+      window_seconds: 60
+
+  - path: /api/users
+    target: http://localhost:8001/users
+    method: POST
+    auth_required: true
+    rate_limit:
+      requests: 10
+      window_seconds: 60
+
+  - path: /api/users/{id}
+    target: http://localhost:8001/users/{id}
+    method: GET
+    auth_required: true
+    rate_limit:
+      requests: 30
+      window_seconds: 60
+
+  - path: /api/users/{id}
+    target: http://localhost:8001/users/{id}
+    method: DELETE
+    auth_required: true
+    rate_limit:
+      requests: 5
+      window_seconds: 60
+
+  # ------------------------------------------------------------
+  # Order Service
+  # ------------------------------------------------------------
+
+  - path: /api/orders
+    target: http://localhost:8002/orders
+    method: GET
+    auth_required: true
+    rate_limit:
+      requests: 20
+      window_seconds: 60
+
+  - path: /api/orders
+    target: http://localhost:8002/orders
+    method: POST
+    auth_required: true
+    rate_limit:
+      requests: 10
+      window_seconds: 30
+
+  - path: /api/orders/{id}
+    target: http://localhost:8002/orders/{id}
+    method: GET
+    auth_required: true
+    rate_limit:
+      requests: 20
+      window_seconds: 60
+
+  - path: /api/orders/{id}
+    target: http://localhost:8002/orders/{id}
+    method: PATCH
+    auth_required: true
+    rate_limit:
+      requests: 5
+      window_seconds: 60
+
+  # ------------------------------------------------------------
+  # Auth Service  (no auth_required — these issue the tokens)
+  # ------------------------------------------------------------
+
+  - path: /api/auth/login
+    target: http://localhost:8003/auth/login
+    method: POST
+    auth_required: false
+    rate_limit:
+      requests: 5          # tight limit to slow brute force
+      window_seconds: 60
+
+  - path: /api/auth/refresh
+    target: http://localhost:8003/auth/refresh
+    method: POST
+    auth_required: false
+    rate_limit:
+      requests: 10
+      window_seconds: 60
+
+  - path: /api/auth/logout
+    target: http://localhost:8003/auth/logout
+    method: POST
+    auth_required: true
+    rate_limit:
+      requests: 10
+      window_seconds: 60
+
+  # ------------------------------------------------------------
+  # Product Service  (public reads, protected writes)
+  # ------------------------------------------------------------
+
+  - path: /api/products
+    target: http://localhost:8004/products
+    method: GET
+    auth_required: false   # public catalog
+    rate_limit:
+      requests: 50
+      window_seconds: 60
+
+  - path: /api/products
+    target: http://localhost:8004/products
+    method: POST
+    auth_required: true
+    rate_limit:
+      requests: 10
+      window_seconds: 60
+
+  - path: /api/products/{id}
+    target: http://localhost:8004/products/{id}
+    method: GET
+    auth_required: false
+    rate_limit:
+      requests: 50
+      window_seconds: 60
+
+  - path: /api/products/{id}
+    target: http://localhost:8004/products/{id}
+    method: PUT
+    auth_required: true
+    rate_limit:
+      requests: 10
+      window_seconds: 60
+
+  - path: /api/products/{id}
+    target: http://localhost:8004/products/{id}
+    method: DELETE
+    auth_required: true
+    rate_limit:
+      requests: 5
+      window_seconds: 60
